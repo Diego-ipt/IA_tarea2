@@ -29,7 +29,7 @@ ofstream reward_output;
 int action_sel=2; // 1 is greedy, 2 is e-greedy
 int environment= 2; // 1 is small grid, 2 is Cliff walking
 int algorithm = 2; //1 is Q-learning, 2 is Sarsa
-int stochastic_actions=0; // 0 is deterministic actions, 1 for stochastic actions
+int stochastic_actions=1; // 0 is deterministic actions, 1 for stochastic actions
 int num_episodes=200; //total learning episodes
 float learn_rate=0.1; // how much the agent weights each new sample
 float disc_factor=0.99; // how much the agent weights future rewards
