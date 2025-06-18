@@ -158,8 +158,8 @@ void imprimirGrilla(vector<Cluster> Clusters) {
             int x = static_cast<int>(p.x);
             int y = static_cast<int>(p.y);
             // Invertir y para que (0,0) esté abajo a la izquierda
-            if (x >= 0 && x < 10 && y >= 0 && y < 10)
-                grilla[9 - y][x] = simbolo;
+            if (x >= 0 && x <= 10 && y >= 0 && y <= 10)
+                grilla[10-y][x-1] = simbolo;
         }
     }
 

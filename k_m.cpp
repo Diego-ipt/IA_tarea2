@@ -23,7 +23,7 @@ void dibujar_grilla(const vector<Punto>& puntos) {
     for (int i = 0; i < puntos.size(); ++i) {
         int x = (int)puntos[i].x;
         int y = (int)puntos[i].y;
-        if (x >= 1 && x <= 10 && y >= 1 && y <= 10 && puntos[i].cluster >= 0)
+        if (x >= 0 && x <= 10 && y >= 0 && y <= 10 && puntos[i].cluster >= 0)
             grilla[10-y][x-1] = simbolos[puntos[i].cluster];
     }
     cout << "Grilla 10x10 (#=Cluster1, @=Cluster2, o=Cluster3):\n";
