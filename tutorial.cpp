@@ -33,7 +33,7 @@ int stochastic_actions=0; // 0 is deterministic actions, 1 for stochastic action
 int num_episodes=3000; //total learning episodes
 float learn_rate=0.1; // how much the agent weights each new sample
 float disc_factor=0.99; // how much the agent weights future rewards
-float exp_rate=0.3; // how much the agent explores
+float exp_rate=0.05; // how much the agent explores (epsilon-greedy)
 ///////////////
 
 
@@ -125,19 +125,38 @@ void Initialize_environment()
 
 int action_selection()
 { // Based on the action selection method chosen, it selects an action to execute next
-    
-
-    
     if(action_sel==1) //Greedy, always selects the action with the largest Q value
     {
-        
-        return rand()%4; //Currently returing a random action, need to code the greedy strategy
+        // Greedy: elegir acción con mayor Q-value
+        int best_action = 0;
+        float best_q = Qvalues[x_pos][y_pos][0];
+        for(int a=1; a<4; a++) {
+            if(Qvalues[x_pos][y_pos][a] > best_q) {
+                best_q = Qvalues[x_pos][y_pos][a];
+                best_action = a;
+            }
+        }
+        return best_action;
     }
-    
+
     if(action_sel==2)//epsilon-greedy, selects the action with the largest Q value with prob (1-exp_rate) and a random action with prob (exp_rate)
     {
-        return rand()%4; //Currently returing a random action, need to code the e-greedy strategy
-        
+        float r = ((float) rand()) / RAND_MAX;
+        if(r < exp_rate) {
+            // Exploración: acción aleatoria
+            return rand()%4;
+        } else {
+            // Explotación: acción con mayor Q-value
+            int best_action = 0;
+            float best_q = Qvalues[x_pos][y_pos][0];
+            for(int a=1; a<4; a++) {
+                if(Qvalues[x_pos][y_pos][a] > best_q) {
+                    best_q = Qvalues[x_pos][y_pos][a];
+                    best_action = a;
+                }
+            }
+            return best_action;
+        }
     }
     return 0;
 }
@@ -146,13 +165,22 @@ void move(int action)
 {
     prev_x_pos=x_pos; //Backup of the current position, which will become past position after this method
     prev_y_pos=y_pos;
-    
+
     //Stochastic transition model (not known by the agent)
     //Assuming a .8 prob that the action will perform as intended, 0.1 prob. of moving instead to the right, 0.1 prob of moving instead to the left
-    
+
     if(stochastic_actions)
     {
-        //Code here should change the value of variable action, based on the stochasticity of the action outcome
+        float r = ((float) rand()) / RAND_MAX;
+        if(r < 0.8) {
+            // acción original, no cambia
+        } else if(r < 0.9) {
+            // 10%: derecha de la dirección deseada
+            action = (action + 1) % 4;
+        } else {
+            // 10%: izquierda de la dirección deseada
+            action = (action + 3) % 4; 
+        }
     }
     
     //After determining the real outcome of the chosen action, move the agent
@@ -284,7 +312,8 @@ int main(int argc, char* argv[])
 {
     srand(time(NULL));
     
-    reward_output.open("Rewards.txt", ios_base::app);
+    reward_output.open("Rewards.csv"); // Cambia a CSV y abre en modo truncar
+    reward_output << "episode,reward\n"; // Escribe la cabecera CSV
     Initialize_environment();//Initialize the features of the chosen environment (goal and initial position, obstacles, rewards)
 
     for(i=0;i<num_episodes;i++)
@@ -321,6 +350,7 @@ int main(int argc, char* argv[])
 
         finalrw[i]=cum_reward;
         cout << " Total reward obtained: " <<finalrw[i] <<"\n";
+        reward_output << i << "," << finalrw[i] << "\n"; // Escribe episodio y reward en CSV
         
        
         
